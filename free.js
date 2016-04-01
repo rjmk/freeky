@@ -20,7 +20,7 @@ Free.prototype.map = function(f) {
 }
 
 Free.prototype.ap = function(a) {
-  return this.x.ap ? this.x.ap(a) ? this.chain(f => a.map(f))
+  return this.x.ap ? this.x.ap(a) : this.chain(f => a.map(f))
 }
 
 Free.prototype.chain = function(f) {

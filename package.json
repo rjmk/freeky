@@ -7,9 +7,11 @@
     "daggy": "0.0.1",
     "data.task": "3.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tape": "4.5.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --harmony-destructuring test.js"
   },
   "repository": {
     "type": "git",

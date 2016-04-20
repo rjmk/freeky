@@ -12,10 +12,10 @@ const find = (xs, f) => {
   return found;
 }
 
-const dispatch = pairs =>
+const dispatch = of => pairs =>
   instruction_of_arg => {
-    const interpreter = find(pairs, xs => // [type, interpreter]
-        instruction_of_arg.constructor === xs[0])[1]
+    const interpreter = (find(pairs, xs => // [type, interpreter]
+        instruction_of_arg.constructor === xs[0]) || [null, of])[1]
 
     return interpreter(instruction_of_arg)
   }

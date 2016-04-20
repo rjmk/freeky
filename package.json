@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "daggy": "0.0.1",
-    "data.task": "safareli/data.task.git#patch-1"
+    "data.task": "3.1.0"
   },
   "devDependencies": {},
   "scripts": {

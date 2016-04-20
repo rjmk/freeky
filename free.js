@@ -1,46 +1,37 @@
 const daggy = require('daggy')
 
-const Free = daggy.taggedSum({Impure: ['x', 'f'], Pure: ['x']})
+const id = x => x
 
-Free.of = Free.Pure
+const Free = daggy.tagged('x', 'fs')
+const Call = daggy.tagged('method', 'arg')
 
-const kleisli_comp = (f, g) => x => f(x).chain(g)
+const method = function (name) {
+  return function (arg) {
+    return Free(this.x, this.fs.concat(Call(name, arg)))
+  }
+}
 
 Free.prototype.fold = function() {
   return this.x.fold.apply(this.x, arguments)
 }
 
+var methods = [ 'map', 'ap', 'chain' ]
 
-Free.prototype.map = function(f) {
-  return this.cata({
-    Impure: (x, g) => Free.Impure(x, y => g(y).map(f)),
-    Pure: x => Free.Pure(f(x))
-  })
-}
+methods.forEach(name => Free.prototype[name] = method(name))
 
-Free.prototype.ap = function(a) {
-  return this.cata({
-    Impure: (x, g) => Free.Impure(x, y => g(y).ap(a)),
-    Pure: f => a.map(f)
-  })
-}
-
-Free.prototype.chain = function(f) {
-  return this.cata({
-    Impure: (x, g) => Free.Impure(x, kleisli_comp(g, f)),
-    Pure: x => f(x)
-  })
-}
-
-const liftF = command => Free.Impure(command, Free.Pure)
+const liftF = command => Free(command, [])
 
 Free.prototype.foldMap = function(interpreter, of) {
-  return this.cata({
-    Pure: a => of(a),
-    Impure: (intruction_of_arg, next) =>
-      interpreter(intruction_of_arg).chain(result =>
-        next(result).foldMap(interpreter, of))
-  })
+  return this.fs.reduce(interpretStep(interpreter), interpreter(this.x))
 }
+
+const interpretStep = interpreter => (monad, call) =>
+  monad[call.method](interpreterUses[call.method](interpreter)(call.arg))
+
+var interpreterUses =
+  { 'map': () => id
+  , 'ap': f => free => f(free.x)
+  , 'chain': (f, of) => g => a => g(a).foldMap(f, of)
+  }
 
 module.exports = { liftF, Free }

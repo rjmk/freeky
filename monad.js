@@ -1,4 +1,4 @@
-const Free = require('./free').Free
+const lift = require('./free').liftF
 
 const Monad = {
   do: gen => {
@@ -11,7 +11,7 @@ const Monad = {
     }
     return step()
   },
-  of: Free.of
+  of: lift
 }
 
 module.exports = Monad

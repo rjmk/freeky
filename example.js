@@ -43,9 +43,9 @@ app.foldMap(runApp, Task.of).fork(console.error, console.log)
 
 // do syntax is much nicer
 gtZero(10)
-.chain(ten =>
-    asyncGet(4).map(four =>
-      ten + four))
+.chain(ten => {
+    return asyncGet(4).map(four => {
+      return ten + four}) })
 .foldMap(runApp, Task.of).fork(console.error, console.log)
 // 14
 

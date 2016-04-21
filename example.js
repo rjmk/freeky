@@ -34,13 +34,13 @@ const app = Monad.do(function *() {
 // this tells our Free.foldMap how to dispatch. We need all of them to turn into a target monad (in this case Task)
 const runApp = dispatch(Task.of)
   ( [ [IOType, ioToTask]
-      , [ContType, contToTask]
-      , [Either, eitherToTask]
-      , [Maybe, maybeToTask]
+    , [ContType, contToTask]
+    , [Either, eitherToTask]
+    , [Maybe, maybeToTask]
     ]
   )
 
-app.foldMap(runApp, Task.of).fork(console.error, console.log)
+app.foldMap(runApp).fork(console.error, console.log)
 // 10
 
 // do syntax is much nicer
@@ -48,8 +48,8 @@ gtZero(10)
 .chain(ten =>
     asyncGet(4).map(four =>
       ten + four))
-.foldMap(runApp, Task.of).fork(console.error, console.log)
+.foldMap(runApp).fork(console.error, console.log)
 // 14
 
-gtZero(0).chain(() => asyncGet(4)).foldMap(runApp, Task.of).fork(console.error, console.log)
+gtZero(0).chain(() => asyncGet(4)).foldMap(runApp).fork(console.error, console.log)
 // error: it was less than zero

@@ -46,7 +46,7 @@ test('gives us 10', t => {
     return Monad.of(ioNumber + maybeNumber + eitherNumber + contNumber)
   })
 
-  app.foldMap(runApp, Task.of).fork(t.fail, equalAndEnd(t)("it's 10!")(10))
+  app.foldMap(runApp).fork(t.fail, equalAndEnd(t)("it's 10!")(10))
 })
 
 test('give us 14', t =>
@@ -55,12 +55,12 @@ test('give us 14', t =>
   .chain(ten => {
       return asyncGet(4).map(four => {
         return ten + four}) })
-  .foldMap(runApp, Task.of).fork(t.fail, equalAndEnd(t)("it's 14")(14))
+  .foldMap(runApp).fork(t.fail, equalAndEnd(t)("it's 14")(14))
 )
 
 test('gives us error string', t => {
   gtZero(0).chain(() => asyncGet(4))
-    .foldMap(runApp, Task.of).fork
+    .foldMap(runApp).fork
       ( equalAndEnd(t)("it failed!")("it was less than zero")
       , t.fail
       )
@@ -70,7 +70,7 @@ test('ap works in parallel', t => {
   t.timeoutAfter(300)
   const second = asyncGet(1)
   const app = second.map(() => () => () => true).ap(second).ap(second)
-  app.foldMap(runApp, Task.of).fork(t.fail, equalAndEnd(t)('happened fast!')(true))
+  app.foldMap(runApp).fork(t.fail, equalAndEnd(t)('happened fast!')(true))
 })
 
 test('works without ap/map defined', t => {
@@ -78,6 +78,6 @@ test('works without ap/map defined', t => {
   delete Task.prototype.ap
   const second = asyncGet(1)
   const app = second.map(() => () => () => true).ap(second).ap(second)
-  app.foldMap(runApp, Task.of).fork(t.fail, equalAndEnd(t)('still works!')(true))
+  app.foldMap(runApp).fork(t.fail, equalAndEnd(t)('still works!')(true))
 })
 

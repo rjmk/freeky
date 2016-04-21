@@ -21,7 +21,7 @@ methods.forEach(name => Free.prototype[name] = method(name))
 
 const liftF = command => Free(command, [])
 
-Free.prototype.foldMap = function(interpreter, of) {
+Free.prototype.foldMap = function(interpreter) {
   return this.fs.reduce(interpretStep(interpreter), interpreter(this.x))
 }
 
@@ -31,9 +31,9 @@ const interpretStep = interpreter => (monad, call) => {
 }
 
 const interpreterUses =
-  { 'map': () => id
+  { 'map': _ => id
   , 'ap': f => free => f(free.x)
-  , 'chain': (f, of) => g => a => g(a).foldMap(f, of)
+  , 'chain': f => g => a => g(a).foldMap(f)
   }
 
 const fallback = monad => method =>

@@ -30,9 +30,9 @@ const asyncGet = n =>
 // this tells our Free.foldMap how to dispatch. We need all of them to turn into a target monad (in this case Task)
 const runApp = dispatch(Task.of)
   ( [ [IOType, ioToTask]
-      , [ContType, contToTask]
-      , [Either, eitherToTask]
-      , [Maybe, maybeToTask]
+    , [ContType, contToTask]
+    , [Either, eitherToTask]
+    , [Maybe, maybeToTask]
     ]
   )
 
@@ -71,5 +71,13 @@ test('ap works in parallel', t => {
   const second = asyncGet(1)
   const app = second.map(() => () => () => true).ap(second).ap(second)
   app.foldMap(runApp, Task.of).fork(t.fail, equalAndEnd(t)('happened fast!')(true))
+})
+
+test('works without ap/map defined', t => {
+  delete Task.prototype.map
+  delete Task.prototype.ap
+  const second = asyncGet(1)
+  const app = second.map(() => () => () => true).ap(second).ap(second)
+  app.foldMap(runApp, Task.of).fork(t.fail, equalAndEnd(t)('still works!')(true))
 })
 

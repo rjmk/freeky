@@ -1,4 +1,5 @@
 const daggy = require('daggy')
+const fallback = require('fantasy-derivations')
 
 const id = x => x
 
@@ -26,7 +27,7 @@ Free.prototype.foldMap = function(interpreter) {
 }
 
 const interpretStep = interpreter => (monad, call) => {
-  const method = fallback(monad)(call.method)
+  const method = fallback(call.method, monad)
   return method(interpreterUses[call.method](interpreter)(call.arg))
 }
 
@@ -34,14 +35,6 @@ const interpreterUses =
   { 'map': _ => id
   , 'ap': f => free => f(free.x)
   , 'chain': f => g => a => g(a).foldMap(f)
-  }
-
-const fallback = monad => method =>
-  (monad[method] || fallbacks[method](monad)).bind(monad)
-
-const fallbacks =
-  { 'map': m => f => m.chain(a=> (m.of || m.constructor.of)(f(a)))
-  , 'ap': m => m2 => m.chain(f => fallback(m2)('map')(f))
   }
 
 module.exports = { liftF, Free }
